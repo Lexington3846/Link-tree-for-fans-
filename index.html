@@ -1,0 +1,842 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyboy Sirius | Official Links</title>
+    
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-blue: #0a1628;
+            --navy: #1e3a8a;
+            --royal-blue: #3b82f6;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-strong: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-blue);
+            color: var(--white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 3D Canvas Background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Main Content Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Loading State */
+        .loading-container {
+            position: fixed;
+            inset: 0;
+            background: var(--dark-blue);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--royal-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Hidden Admin Link */
+        .admin-secret {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            z-index: 1000;
+            opacity: 0;
+            cursor: default;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            padding: 5px;
+            background: linear-gradient(135deg, var(--royal-blue), var(--navy));
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--dark-blue);
+            background: var(--navy);
+        }
+
+        .artist-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--white), var(--royal-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        /* Join Reincarnators Badge */
+        .community-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-strong);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--white);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .community-badge:hover {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+            transform: translateY(-2px);
+        }
+
+        .community-badge:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .phoenix-emoji {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        /* Notification Bell */
+        .notification-section {
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .notify-btn {
+            background: linear-gradient(135deg, var(--royal-blue), var(--navy));
+            border: none;
+            color: var(--white);
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .notify-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .notify-btn:hover::before {
+            left: 100%;
+        }
+
+        .notify-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .notify-btn:active {
+            transform: translateY(-1px) scale(0.95);
+        }
+
+        .notify-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notify-btn i {
+            font-size: 1.2rem;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            border: 2px solid var(--royal-blue);
+            animation: pulse 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Links Container */
+        .links-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* 3D Link Cards */
+        .link-card {
+            position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(0) rotateY(0);
+            text-decoration: none;
+            color: var(--white);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .link-card:hover::before {
+            opacity: 1;
+        }
+
+        .link-card:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateZ(20px);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .link-card:active {
+            transform: perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(0.95);
+            transition: all 0.1s;
+        }
+
+        /* Glassy Icon Container */
+        .link-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .link-card:hover .link-icon {
+            transform: scale(1.1) translateZ(30px);
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .link-info {
+            flex: 1;
+        }
+
+        .link-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .link-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .link-arrow {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s;
+        }
+
+        .link-card:hover .link-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Last Updated */
+        .last-updated {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        .footer-brand {
+            font-weight: 700;
+            color: var(--royal-blue);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .artist-name {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div class="loading-container" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text">Loading latest updates...</div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-image-container">
+                <img src="https://via.placeholder.com/150/1e3a8a/ffffff?text=FS" alt="Profile" class="profile-image" id="profileImage">
+            </div>
+            <h1 class="artist-name" id="artistName">Flyboy Sirius</h1>
+            
+            <!-- Join Reincarnators Badge -->
+            <a href="#" class="community-badge" id="communityLink" onclick="triggerHaptic(this); goToCommunity(event)">
+                <span class="phoenix-emoji">🐦‍🔥</span>
+                <span>Join Reincarnators</span>
+            </a>
+        </div>
+
+        <!-- Notification Bell -->
+        <div class="notification-section">
+            <button class="notify-btn" id="notifyBtn" onclick="triggerHaptic(this); toggleNotifications()">
+                <span class="pulse-ring" id="pulseRing" style="display: none;"></span>
+                <i class="fas fa-bell" id="bellIcon"></i>
+                <span id="notifyText">Get Notified</span>
+            </button>
+        </div>
+
+        <!-- Links Container -->
+        <div class="links-container" id="linksContainer">
+            <!-- Links will be populated by JavaScript -->
+        </div>
+
+        <!-- Last Updated -->
+        <div class="last-updated" id="lastUpdated"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 <span class="footer-brand" id="footerName">Flyboy Sirius</span>. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        let profileData = {
+            name: "Flyboy Sirius",
+            image: "https://via.placeholder.com/150/1e3a8a/ffffff?text=FS",
+            communityUrl: "",
+            notificationsEnabled: false
+        };
+
+        let platforms = [];
+        let audioContext = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            loadData();
+            initAudioContext();
+            setupHapticFeedback();
+        });
+
+        // Load data from data.json (with cache busting)
+        async function loadData() {
+            try {
+                // Add cache-busting parameter to always get fresh data
+                const timestamp = new Date().getTime();
+                const response = await fetch(`data.json?v=${timestamp}`, {
+                    cache: 'no-store'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load data');
+                }
+                
+                const data = await response.json();
+                
+                if (data.profile) {
+                    profileData = data.profile;
+                }
+                if (data.platforms) {
+                    platforms = data.platforms;
+                }
+                
+                // Update last updated text
+                if (data.lastUpdated) {
+                    const date = new Date(data.lastUpdated);
+                    document.getElementById('lastUpdated').textContent = 
+                        `Last updated: ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+                }
+                
+            } catch (error) {
+                console.log('Using default data:', error);
+                // Fallback to defaults if data.json not found
+                platforms = [
+                    { id: 1, name: "Spotify", url: "", icon: "fab fa-spotify", subtitle: "Coming soon", color: "#1DB954" },
+                    { id: 2, name: "Apple Music", url: "", icon: "fab fa-apple", subtitle: "Coming soon", color: "#FA243C" },
+                    { id: 3, name: "YouTube", url: "", icon: "fab fa-youtube", subtitle: "Coming soon", color: "#FF0000" }
+                ];
+            } finally {
+                updateUI();
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        // Update UI with loaded data
+        function updateUI() {
+            document.getElementById('artistName').textContent = profileData.name;
+            document.getElementById('footerName').textContent = profileData.name;
+            document.getElementById('profileImage').src = profileData.image;
+            
+            const communityLink = document.getElementById('communityLink');
+            if (profileData.communityUrl) {
+                communityLink.href = profileData.communityUrl;
+            }
+            
+            renderLinks();
+        }
+
+        // Initialize Audio Context after user interaction
+        function initAudioContext() {
+            document.addEventListener('click', function init() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                document.removeEventListener('click', init);
+            }, { once: true });
+        }
+
+        // Haptic Touch Feedback System with ULTRA-QUIET Sound (Option 1)
+        function triggerHaptic(element) {
+            if (navigator.vibrate) {
+                navigator.vibrate(15);
+            }
+            
+            playTouchSound();
+            
+            if (element) {
+                element.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    element.style.transform = '';
+                }, 100);
+            }
+        }
+
+        // Play touch sound - ULTRA QUIET (0.005 = 0.5% volume)
+        function playTouchSound() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 1200;
+                oscillator.type = 'sine';
+                
+                // ULTRA QUIET - barely perceptible (was 0.02, now 0.005)
+                gainNode.gain.setValueAtTime(0.005, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.03);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.03);
+            } catch (e) {
+                console.log('Audio feedback not available');
+            }
+        }
+
+        // Setup haptic feedback for all interactive elements
+        function setupHapticFeedback() {
+            const allButtons = document.querySelectorAll('button, a, .link-card, .community-badge');
+            
+            allButtons.forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    if (navigator.vibrate) navigator.vibrate(15);
+                    playTouchSound();
+                    this.style.transform = 'scale(0.95)';
+                }, {passive: true});
+                
+                btn.addEventListener('touchend', function(e) {
+                    this.style.transform = '';
+                }, {passive: true});
+                
+                btn.addEventListener('touchcancel', function(e) {
+                    this.style.transform = '';
+                }, {passive: true});
+                
+                btn.addEventListener('mousedown', function(e) {
+                    playTouchSound();
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                btn.addEventListener('mouseup', function(e) {
+                    this.style.transform = '';
+                });
+                
+                btn.addEventListener('mouseleave', function(e) {
+                    this.style.transform = '';
+                });
+            });
+        }
+
+        // Three.js 3D Phoenix Background
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const scaleArray = new Float32Array(particlesCount);
+
+            for(let i = 0; i < particlesCount * 3; i += 3) {
+                const t = (i / 3) / particlesCount;
+                const angle = t * Math.PI * 4;
+                const radius = 10 + Math.sin(angle * 3) * 5;
+                
+                posArray[i] = Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
+                posArray[i+1] = Math.sin(angle) * radius * 0.6 + (Math.random() - 0.5) * 2;
+                posArray[i+2] = (Math.random() - 0.5) * 10;
+                
+                scaleArray[i/3] = Math.random();
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('scale', new THREE.BufferAttribute(scaleArray, 1));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.2,
+                color: 0x3b82f6,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+
+            const blueLight = new THREE.PointLight(0x3b82f6, 2, 50);
+            blueLight.position.set(10, 10, 10);
+            scene.add(blueLight);
+
+            const whiteLight = new THREE.PointLight(0xffffff, 1, 50);
+            whiteLight.position.set(-10, -10, 10);
+            scene.add(whiteLight);
+
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                const elapsedTime = clock.getElapsedTime();
+
+                particlesMesh.rotation.y = elapsedTime * 0.05;
+                particlesMesh.rotation.z = elapsedTime * 0.02;
+
+                targetX = mouseX * 0.5;
+                targetY = mouseY * 0.5;
+                
+                particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+                particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
+
+                const scale = 1 + Math.sin(elapsedTime * 2) * 0.05;
+                particlesMesh.scale.set(scale, scale, scale);
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Render Links
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            const validPlatforms = platforms.filter(p => p.url && p.url.trim() !== '');
+            
+            if (validPlatforms.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">Links coming soon...</p>';
+                return;
+            }
+            
+            container.innerHTML = validPlatforms.map(platform => `
+                <a href="${platform.url}" target="_blank" class="link-card" 
+                   style="--platform-color: ${platform.color}"
+                   onclick="triggerHaptic(this)">
+                    <div class="link-icon" style="background: ${platform.color}30; color: ${platform.color}; border-color: ${platform.color}50;">
+                        <i class="${platform.icon}"></i>
+                    </div>
+                    <div class="link-info">
+                        <div class="link-title">${platform.name}</div>
+                        <div class="link-subtitle">${platform.subtitle}</div>
+                    </div>
+                    <div class="link-arrow">
+                        <i class="fas fa-external-link-alt"></i>
+                    </div>
+                </a>
+            `).join('');
+            
+            // Re-apply haptic feedback to new elements
+            setupHapticFeedback();
+        }
+
+        // Go to Community
+        function goToCommunity(event) {
+            if (!profileData.communityUrl) {
+                event.preventDefault();
+                showToast("Community link coming soon");
+            }
+        }
+
+        // Notifications
+        function toggleNotifications() {
+            const btn = document.getElementById('notifyBtn');
+            const text = document.getElementById('notifyText');
+            const icon = document.getElementById('bellIcon');
+            const ring = document.getElementById('pulseRing');
+            
+            profileData.notificationsEnabled = !profileData.notificationsEnabled;
+            
+            if (profileData.notificationsEnabled) {
+                if ('Notification' in window && Notification.permission !== 'granted') {
+                    Notification.requestPermission();
+                }
+                
+                btn.classList.add('active');
+                text.textContent = 'Notifications On';
+                icon.classList.remove('fa-bell');
+                icon.classList.add('fa-bell-slash');
+                ring.style.display = 'block';
+                
+                showToast("You'll be notified of new drops!");
+            } else {
+                btn.classList.remove('active');
+                text.textContent = 'Get Notified';
+                icon.classList.remove('fa-bell-slash');
+                icon.classList.add('fa-bell');
+                ring.style.display = 'none';
+                showToast("Notifications turned off");
+            }
+            
+            localStorage.setItem('flyboy_notifications', JSON.stringify(profileData.notificationsEnabled));
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.cssText = 'position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; color: #0a1628; padding: 15px 30px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1002; opacity: 0; transition: all 0.4s;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(100px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // Check for saved notification preference
+        window.addEventListener('load', () => {
+            const savedNotifications = localStorage.getItem('flyboy_notifications');
+            if (savedNotifications === 'true') {
+                profileData.notificationsEnabled = true;
+                document.getElementById('notifyBtn').classList.add('active');
+                document.getElementById('notifyText').textContent = 'Notifications On';
+                document.getElementById('bellIcon').classList.remove('fa-bell');
+                document.getElementById('bellIcon').classList.add('fa-bell-slash');
+                document.getElementById('pulseRing').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
